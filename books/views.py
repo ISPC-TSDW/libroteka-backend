@@ -189,6 +189,7 @@ class RoleRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class UsersLibrotekaListCreate(APIView):
+    permission_classes = [AllowAny]
     def get(self, request):
         users = UsersLibroteka.objects.all()
         serializer = UsersLibrotekaSerializer(users, many=True)
