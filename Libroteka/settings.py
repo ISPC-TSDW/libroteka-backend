@@ -70,8 +70,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost",
     "http://localhost:*",
     "http://localhost:4200",
-    "https://libroteka-frontend.onrender.com*",
-    "https://libroback.koyeb.app*",
+    "https://libroteka-frontend.onrender.com",
+    "https://libroback.koyeb.app",
 ]
 
 CORS_ALLOW_METHODS = [
