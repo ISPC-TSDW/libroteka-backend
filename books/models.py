@@ -65,6 +65,11 @@ class Genre(models.Model):
     
 current_year = datetime.now().year
 
+isbn_validator = RegexValidator(
+    regex=r'^\d{10}(\d{3})?$',
+    message='El ISBN debe tener 10 o 13 dígitos numéricos.'
+)
+
         
 class Book(models.Model):
 
@@ -77,7 +82,10 @@ class Book(models.Model):
     stock= models.PositiveIntegerField(default=1000)
     id_Editorial = models.ForeignKey(Editorial, to_field='id_Editorial', on_delete=models.CASCADE, blank=True, null=True)
     avg_rating = models.FloatField(default=0.0, blank=True)
-    ISBN = ISBNField(blank=True, null=True)
+    ISBN = models.CharField(
+        max_length=13,
+        validators=[isbn_validator],
+        blank=True)
     year = models.PositiveSmallIntegerField(
         default=2000,
         validators=[
