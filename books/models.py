@@ -77,7 +77,7 @@ class Book(models.Model):
     stock= models.PositiveIntegerField(default=1000)
     id_Editorial = models.ForeignKey(Editorial, to_field='id_Editorial', on_delete=models.CASCADE, blank=True, null=True)
     avg_rating = models.FloatField(default=0.0, blank=True)
-    ISBN = ISBNField(unique=True)
+    ISBN = ISBNField(blank=True, null=True)
     year = models.PositiveSmallIntegerField(
         default=2000,
         validators=[
