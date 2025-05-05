@@ -15,23 +15,37 @@ from django.contrib.auth.hashers import make_password
 from .serializer import *
 from .models import *
 from .utils import update_average_rating
+from .permissions import IsStaffUser
 
 
 class AuthorViewSet(viewsets.ModelViewSet):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
+    permission_classes = [IsStaffUser]
 
 class EditorialViewSet(viewsets.ModelViewSet):
     queryset = Editorial.objects.all()
     serializer_class = EditorialSerializer
+    permission_classes = [IsStaffUser]
 
 class GenreViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
+    permission_classes = [IsStaffUser]
 
 class BookViewSet(viewsets.ModelViewSet):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    
+    def get_permissions(self):
+        """
+        Override to use different permissions for different methods:
+        - GET requests are allowed for anyone (list and retrieve)
+        - All other methods (POST, PUT, DELETE) require staff permissions
+        """
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsStaffUser()]
 
 class UsersLibrotekaViewSet(viewsets.ModelViewSet):
     queryset = UsersLibroteka.objects.all()

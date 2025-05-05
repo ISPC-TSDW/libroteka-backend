@@ -22,7 +22,15 @@ class OrderAdmin(admin.ModelAdmin):
 
 
 class UsersLibrotekaAdmin(admin.ModelAdmin):
-    list_display = ('username', 'first_name', 'last_name', 'dni', 'email', 'password', 'is_active')
+    list_display = ('username', 'first_name', 'last_name', 'dni', 'email', 'is_staff', 'is_active')
+    list_filter = ('is_staff', 'is_active')
+    search_fields = ('username', 'email', 'first_name', 'last_name')
+    
+    fieldsets = (
+        (None, {'fields': ('username', 'email', 'password')}),
+        ('Personal info', {'fields': ('first_name', 'last_name', 'dni')}),
+        ('Permissions', {'fields': ('is_active', 'is_staff')}),
+    )
 
 class FavoriteAdmin(admin.ModelAdmin):
     list_display = ('id', 'id_user', 'id_book', 'created_at')
@@ -31,7 +39,7 @@ class RatingAdmin(admin.ModelAdmin):
     list_display = ('id', 'id_user', 'id_book', 'rating', 'created_at', 'updated_at')
 
 
-admin.site.register (UsersLibroteka, UsersLibrotekaAdmin)
+admin.site.register(UsersLibroteka, UsersLibrotekaAdmin)
 admin.site.register(Book, BookAdmin)
 admin.site.register(Author, AuthorAdmin)
 admin.site.register(Editorial, EditorialAdmin)
