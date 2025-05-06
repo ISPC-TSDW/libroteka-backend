@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'books',
     'knox',
+    'cloudinary',
+    'cloudinary_storage',
 ]
 
 MIDDLEWARE = [
@@ -140,13 +142,13 @@ DATABASES = {
 #     }
 }
 
+
 HOST = env('MYSQL_PUBLIC_URL')
 
 DATABASES['default'] = connection_url.config(HOST, {
-        'ENGINE': 'django.db.backends.mysql',
-        'CONN_MAX_AGE': 1000,
-        }, 
-    ENGINE='django.db.backends.mysql')
+                        'ENGINE': 'django.db.backends.mysql',
+                        'CONN_MAX_AGE': 1000,
+                        }, ENGINE='django.db.backends.mysql')
 
 
 # Password validation
@@ -216,3 +218,16 @@ SIMPLE_JWT = {
     "USER_ID_FIELD": "email",
     "USER_ID_CLAIM": "user_email",
 }
+
+
+
+# CLOUDINARY CONFIG
+SECRET_KEY = env('DJANGO_SECRET_KEY')
+CLOUDINARY_STORAGE = {
+    'cloud_name' : env('CLOUDINARY_CLOUD_NAME'), 
+    'api_key' : env('CLOUDINARY_API_KEY'), 
+    'api_secret' : env('CLOUDINARY_API_SECRET'),
+}
+
+# USAR CLOUDINARY PARA MEDIA
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'

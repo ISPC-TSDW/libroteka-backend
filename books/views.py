@@ -5,10 +5,10 @@ from django.shortcuts import get_object_or_404
 from django.views import View
 from knox.models import AuthToken
 from rest_framework import viewsets, generics, permissions, status
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated, BasePermission, SAFE_METHODS
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.hashers import make_password
 
@@ -16,6 +16,13 @@ from .serializer import *
 from .models import *
 from .utils import update_average_rating
 
+class IsAdminGroupOrSuperadmin(BasePermission):
+    def has_permission(self, request, view):
+        if request.method in SAFE_METHODS:
+            return True
+        return request.user.is_superuser or request.user.groups.filter(name='Admin').exists()
+
+    
 
 class AuthorViewSet(viewsets.ModelViewSet):
     queryset = Author.objects.all()
@@ -30,8 +37,15 @@ class GenreViewSet(viewsets.ModelViewSet):
     serializer_class = GenreSerializer
 
 class BookViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAdminGroupOrSuperadmin]
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    parser_classes = [MultiPartParser, FormParser]
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class UsersLibrotekaViewSet(viewsets.ModelViewSet):
     queryset = UsersLibroteka.objects.all()
@@ -40,7 +54,7 @@ class UsersLibrotekaViewSet(viewsets.ModelViewSet):
 
 
 class LibrosView(APIView):
-
+    permission_classes = [AllowAny]
     def get(self, request):
         books = Book.objects.all()
         books_data = BookSerializer(books, many=True).data
@@ -198,8 +212,10 @@ class UsersLibrotekaListCreate(APIView):
     def post(self, request):
         serializer = UsersLibrotekaSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            user = serializer.save()
+            cliente_group = Group.objects.get(name="Cliente")
+            cliente_group.user_set.add(user)
+            return Response({"message": "Usuario registrado con éxito:"}, serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
@@ -216,7 +232,6 @@ class UsersLibrotekaListUser(APIView):
 class CreateOrderView(APIView):
     def post(self, request):
         user_email = request.data.get('id_User')
-        user = get_object_or_404(UsersLibroteka, email=user_email)
         try:
             user = UsersLibroteka.objects.get(email=user_email)
         except UsersLibroteka.DoesNotExist:

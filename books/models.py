@@ -1,23 +1,12 @@
 from django.db import models
+from isbn_field import ISBNField
 from django.contrib.auth.models import AbstractUser, Group, Permission
-from django.core.validators import RegexValidator, MinLengthValidator
+from django.core.validators import RegexValidator, MinLengthValidator, MinValueValidator, MaxValueValidator
+from datetime import datetime
+from cloudinary.models import CloudinaryField
 
 
-# class User(AbstractUser):
-#     first_name = models.CharField(max_length=30)
-#     last_name = models.CharField(max_length=35)
-#     dni = models.CharField(max_length=10, validators=[RegexValidator(r'^\d{1,10}$')])
-#     email = models.EmailField(primary_key=True, unique=True)
 
-#     groups = models.ManyToManyField(Group, related_name='books_users')
-#     user_permissions = models.ManyToManyField(Permission, related_name='books_users')
-
-#     class Meta:
-#         db_table = 'users'
-#         verbose_name = "Usuario"
-#         verbose_name_plural = "Usuarios"
-#     def __str__(self):
-#         return f"{self.first_name} {self.last_name}"
 
 class Role(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -73,6 +62,15 @@ class Genre(models.Model):
 
     def __str__(self):
         return self.name
+    
+current_year = datetime.now().year
+
+isbn_validator = RegexValidator(
+    regex=r'^\d{10}(\d{3})?$',
+    message='El ISBN debe tener 10 o 13 dígitos numéricos.'
+)
+
+        
 class Book(models.Model):
 
     id_Book = models.AutoField(primary_key=True)
@@ -80,22 +78,33 @@ class Book(models.Model):
     id_Author = models.ForeignKey(Author, to_field='id_Author', on_delete=models.CASCADE, blank=True, null=True)
     id_Genre = models.ForeignKey(Genre, to_field='id_Genre', on_delete=models.CASCADE, blank=True, null=True)
     description= models.TextField(max_length=1500)
-    price= models.DecimalField(blank=False, decimal_places=2, max_digits=10)
-    stock= models.IntegerField(blank=False, default=1000)
+    price= models.DecimalField(decimal_places=2, max_digits=10, validators=[MinValueValidator(0)])
+    stock= models.PositiveIntegerField(default=1000)
     id_Editorial = models.ForeignKey(Editorial, to_field='id_Editorial', on_delete=models.CASCADE, blank=True, null=True)
     avg_rating = models.FloatField(default=0.0, blank=True)
-
+    ISBN = models.CharField(
+        max_length=13,
+        validators=[isbn_validator],
+        blank=True)
+    year = models.PositiveSmallIntegerField(
+        default=2000,
+        validators=[
+            MinValueValidator(1000), 
+            MaxValueValidator(current_year)
+        ]
+    )
+    image = CloudinaryField('image', blank=True, null=True)
 
     class Meta:
         db_table= 'book'
         verbose_name = "Libro"
         verbose_name_plural = "Libros"
 
-        def __unicode__(self):
-            return self.title
+    def __unicode__(self):
+        return self.title
 
-        def __str__(self):
-            return self.title
+    def __str__(self):
+        return self.title
         
     
 class OrderStatus(models.Model):
@@ -135,6 +144,7 @@ class UsersLibroteka(AbstractUser):
     dni = models.CharField(max_length=10, validators=[RegexValidator(r'^\d{1,10}$')], unique=True)
     password = models.CharField(max_length=128)
     is_active = models.BooleanField(blank=False, default=True)
+    role = models.ForeignKey(Role, null=True, blank=True, on_delete=models.SET_NULL)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name', 'dni','is_active']

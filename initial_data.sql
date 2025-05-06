@@ -228,3 +228,237 @@ INSERT INTO book (title, id_Author_id , id_Genre_id, description, price, stock, 
     (SELECT id_Genre FROM genre WHERE name = 'Fantasía'), 
     'Un culto oculto revela los misterios de Cthulhu a través de las investigaciones de Francis Thurston.', 
     180, 20, (SELECT id_Editorial FROM editorial WHERE name = 'Cah. P. Lovecraft y Francois de Regra'), 0.0);
+
+-- Update existing books with ISBN, year, and image information
+
+-- 1. Cien años de soledad
+UPDATE book SET 
+    isbn = '9780307474728',
+    year = 1967,
+    image = NULL
+WHERE title = 'Cien años de soledad' 
+AND id_Author_id = (SELECT id_Author FROM author WHERE name = 'Gabriel García Márquez' LIMIT 1);
+
+-- 2. La casa de los espíritus
+UPDATE book SET 
+    isbn = '9788433963662',
+    year = 1982,
+    image = NULL
+WHERE title = 'La casa de los espíritus' 
+AND id_Author_id = (SELECT id_Author FROM author WHERE name = 'Isabel Allende' LIMIT 1);
+
+-- 3. Harry Potter y la piedra filosofal
+UPDATE book SET 
+    isbn = '9788478888993',
+    year = 1997,
+    image = NULL
+WHERE title = 'Harry Potter y la piedra filosofal' 
+AND id_Author_id = (SELECT id_Author FROM author WHERE name = 'J.K. Rowling' LIMIT 1);
+
+-- 4. El hobbit
+UPDATE book SET 
+    isbn = '9780261103344',
+    year = 1937,
+    image = NULL
+WHERE title = 'El hobbit' 
+AND id_Author_id = (SELECT id_Author FROM author WHERE name = 'J.R.R. Tolkien' LIMIT 1);
+
+-- 5. El viejo y el mar
+UPDATE book SET 
+    isbn = '9780140031448',
+    year = 1952,
+    image = NULL
+WHERE title = 'El viejo y el mar' 
+AND id_Author_id = (SELECT id_Author FROM author WHERE name = 'Ernest Hemingway' LIMIT 1);
+
+-- 6. It
+UPDATE book SET 
+    isbn = '9780450411434',
+    year = 1986,
+    image = NULL
+WHERE title = 'It' 
+AND id_Author_id = (SELECT id_Author FROM author WHERE name = 'Stephen King' LIMIT 1);
+
+-- 7. El laberinto del fauno
+UPDATE book SET 
+    isbn = '9788490942624',
+    year = 2006,
+    image = NULL
+WHERE title = 'El laberinto del fauno' 
+AND id_Author_id = (SELECT id_Author FROM author WHERE name = 'Guillermo Del Toro' LIMIT 1);
+
+-- 8. Corazón de tinta
+UPDATE book SET 
+    isbn = '9788415542279',
+    year = 2003,
+    image = NULL
+WHERE title = 'Corazón de tinta' 
+AND id_Author_id = (SELECT id_Author FROM author WHERE name = 'Cornelia Funke' LIMIT 1);
+
+-- 9. El pasajero 23
+UPDATE book SET 
+    isbn = '9788483833560',
+    year = 2016,
+    image = NULL
+WHERE title = 'El pasajero 23' 
+AND id_Author_id = (SELECT id_Author FROM author WHERE name = 'Sebastian Fitzek' LIMIT 1);
+
+-- 10. A la caza de Jack el Destripador
+UPDATE book SET 
+    isbn = '9780316273497',
+    year = 2016,
+    image = NULL
+WHERE title = 'A la caza de Jack el Destripador' 
+AND id_Author_id = (SELECT id_Author FROM author WHERE name = 'Kerri Maniscalco' LIMIT 1);
+
+-- 11. El Instituto
+UPDATE book SET 
+    isbn = '9781982110567',
+    year = 2019,
+    image = NULL
+WHERE title = 'El Instituto' 
+AND id_Author_id = (SELECT id_Author FROM author WHERE name = 'Stephen King' LIMIT 1);
+
+-- 12. Romeo y Julieta
+UPDATE book SET 
+    isbn = '9780451526861',
+    year = 1597,
+    image = NULL
+WHERE title = 'Romeo y Julieta' 
+AND id_Author_id = (SELECT id_Author FROM author WHERE name = 'William Shakespeare' LIMIT 1);
+
+-- 13. Hamlet
+UPDATE book SET 
+    isbn = '9780743477123',
+    year = 1603,
+    image = NULL
+WHERE title = 'Hamlet' 
+AND id_Author_id = (SELECT id_Author FROM author WHERE name = 'William Shakespeare' LIMIT 1);
+
+-- 14. Cumbres Borrascosas
+UPDATE book SET 
+    isbn = '9788420675712',
+    year = 1847,
+    image = NULL
+WHERE title = 'Cumbres Borrascosas' 
+AND id_Author_id = (SELECT id_Author FROM author WHERE name = 'Emily Bronte' LIMIT 1);
+
+-- 15. El silencio de los vencidos
+UPDATE book SET 
+    isbn = '9788466355951',
+    year = 2021,
+    image = NULL
+WHERE title = 'El silencio de los vencidos' 
+AND id_Author_id = (SELECT id_Author FROM author WHERE name = 'Mery Franco Carrion' LIMIT 1);
+
+-- 16. El resplandor
+UPDATE book SET 
+    isbn = '9780307743657',
+    year = 1977,
+    image = NULL
+WHERE title = 'El resplandor' 
+AND id_Author_id = (SELECT id_Author FROM author WHERE name = 'Stephen King' LIMIT 1);
+
+-- 17. La hora azul
+UPDATE book SET 
+    isbn = '9780735211209',
+    year = 2021,
+    image = NULL
+WHERE title = 'La hora azul' 
+AND id_Author_id = (SELECT id_Author FROM author WHERE name = 'Paula Hawkins' LIMIT 1);
+
+-- 18. Juego de Tronos
+UPDATE book SET 
+    isbn = '9788498722218',
+    year = 2014,
+    image = NULL
+WHERE title = 'Juego de Tronos' 
+AND id_Author_id = (SELECT id_Author FROM author WHERE name = 'Tim Dedopulos' LIMIT 1);
+
+-- 19. El Principito
+UPDATE book SET 
+    isbn = '9780156012195',
+    year = 1943,
+    image = NULL
+WHERE title = 'El Principito' 
+AND id_Author_id = (SELECT id_Author FROM author WHERE name = 'Antoine De Saint Exupery' LIMIT 1);
+
+-- 20. Los Juegos del Hambre
+UPDATE book SET 
+    isbn = '9780439023528',
+    year = 2008,
+    image = NULL
+WHERE title = 'Los Juegos del Hambre' 
+AND id_Author_id = (SELECT id_Author FROM author WHERE name = 'Suzanne Collins' LIMIT 1);
+
+-- 21. Divergente
+UPDATE book SET 
+    isbn = '9780062024039',
+    year = 2011,
+    image = NULL
+WHERE title = 'Divergente' 
+AND id_Author_id = (SELECT id_Author FROM author WHERE name = 'Veronica Roth' LIMIT 1);
+
+-- 22. 1984
+UPDATE book SET 
+    isbn = '9780451524935',
+    year = 1949,
+    image = NULL
+WHERE title = '1984' 
+AND id_Author_id = (SELECT id_Author FROM author WHERE name = 'George Orwell' LIMIT 1);
+
+-- 23. Fahrenheit 451
+UPDATE book SET 
+    isbn = '9781451673319',
+    year = 1953,
+    image = NULL
+WHERE title = 'Fahrenheit 451' 
+AND id_Author_id = (SELECT id_Author FROM author WHERE name = 'Ray Bradbury' LIMIT 1);
+
+-- 24. Dune
+UPDATE book SET 
+    isbn = '9780441172719',
+    year = 1965,
+    image = NULL
+WHERE title = 'Dune' 
+AND id_Author_id = (SELECT id_Author FROM author WHERE name = 'VV.AA.' LIMIT 1);
+
+-- 25. Orgullo y Prejuicio
+UPDATE book SET 
+    isbn = '9780141439518',
+    year = 1813,
+    image = NULL
+WHERE title = 'Orgullo y Prejuicio' 
+AND id_Author_id = (SELECT id_Author FROM author WHERE name = 'Jane Austen' LIMIT 1);
+
+-- 26. Bajo la misma estrella
+UPDATE book SET 
+    isbn = '9780142424179',
+    year = 2012,
+    image = NULL
+WHERE title = 'Bajo la misma estrella' 
+AND id_Author_id = (SELECT id_Author FROM author WHERE name = 'John Green' LIMIT 1);
+
+-- 27. After
+UPDATE book SET 
+    isbn = '9781501106408',
+    year = 2014,
+    image = NULL
+WHERE title = 'After' 
+AND id_Author_id = (SELECT id_Author FROM author WHERE name = 'Anna Todd' LIMIT 1);
+
+-- 28. Drácula
+UPDATE book SET 
+    isbn = '9780486411095',
+    year = 1897,
+    image = NULL
+WHERE title = 'Drácula' 
+AND id_Author_id = (SELECT id_Author FROM author WHERE name = 'Bram Stoker' LIMIT 1);
+
+-- 29. La llamada de Cthulhu
+UPDATE book SET 
+    isbn = '9788498006325',
+    year = 1928,
+    image = NULL
+WHERE title = 'La llamada de Cthulhu' 
+AND id_Author_id = (SELECT id_Author FROM author WHERE name = 'H.P. Lovecraft' LIMIT 1);
