@@ -28,7 +28,7 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = 'django-insecure-q)sw(_dr!#=lvd4*lp51u9c($#(*q$7j%+m_n01+j#za)+p2%d'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG', default=False)
+DEBUG = env('DEBUG', default=True)
 
 #ALLOWED_HOSTS = ['127.0.0.1', "localhost"]
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,[::1]").split(",")
