@@ -15,7 +15,7 @@ class Role(models.Model):
 class Author(models.Model):
 
     id_Author = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True)
     country= models.CharField(max_length=50)
 
     class Meta:
@@ -32,7 +32,7 @@ class Author(models.Model):
 class Editorial(models.Model):
 
     id_Editorial = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=100, default='Anagrama')
+    name = models.CharField(max_length=100, unique=True)
 
     
     class Meta:
@@ -49,7 +49,7 @@ class Editorial(models.Model):
 class Genre(models.Model):
 
     id_Genre = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=100, default='Novela')
+    name = models.CharField(max_length=100, unique=True)
 
     
     class Meta:
@@ -74,7 +74,7 @@ isbn_validator = RegexValidator(
 class Book(models.Model):
 
     id_Book = models.AutoField(primary_key=True)
-    title = models.CharField(max_length=100)
+    title = models.CharField(max_length=100, unique=True)
     id_Author = models.ForeignKey(Author, to_field='id_Author', on_delete=models.CASCADE, blank=True, null=True)
     id_Genre = models.ForeignKey(Genre, to_field='id_Genre', on_delete=models.CASCADE, blank=True, null=True)
     description= models.TextField(max_length=1500)
