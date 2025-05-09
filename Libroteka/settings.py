@@ -14,11 +14,11 @@ from pathlib import Path
 from datetime import timedelta
 import os
 import environ
+BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env()
-environ.Env.read_env()
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Quick-start development settings - unsuitable for production
@@ -28,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-q)sw(_dr!#=lvd4*lp51u9c($#(*q$7j%+m_n01+j#za)+p2%d'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG', default=True)
 
 #ALLOWED_HOSTS = ['127.0.0.1', "localhost"]
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,[::1]").split(",")
@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'books',
     'knox',
+    'cloudinary',
+    'cloudinary_storage',
 ]
 
 MIDDLEWARE = [
@@ -70,7 +72,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost",
     "http://localhost:*",
     "http://localhost:4200",
- ]
+    "https://libroteka-frontend.onrender.com",
+    "https://libroback.koyeb.app",
+]
 
 CORS_ALLOW_METHODS = [
     "DELETE",
@@ -138,12 +142,13 @@ DATABASES = {
 #     }
 }
 
+
 HOST = env('MYSQL_PUBLIC_URL')
 
 DATABASES['default'] = connection_url.config(HOST, {
-                       'ENGINE': 'django.db.backends.mysql',
-                       'CONN_MAX_AGE': 1000,
-                       }, ENGINE='django.db.backends.mysql')
+                        'ENGINE': 'django.db.backends.mysql',
+                        'CONN_MAX_AGE': 1000,
+                        }, ENGINE='django.db.backends.mysql')
 
 
 # Password validation
@@ -190,10 +195,11 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
-   'DEFAULT_PERMISSION_CLASSES': [
-       'rest_framework.permissions.IsAuthenticated',
-   ],
-  'DEFAULT_AUTHENTICATION_CLASSES': [
+    
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -212,3 +218,16 @@ SIMPLE_JWT = {
     "USER_ID_FIELD": "email",
     "USER_ID_CLAIM": "user_email",
 }
+
+
+
+# CLOUDINARY CONFIG
+SECRET_KEY = env('DJANGO_SECRET_KEY')
+CLOUDINARY_STORAGE = {
+    'cloud_name' : env('CLOUDINARY_CLOUD_NAME'), 
+    'api_key' : env('CLOUDINARY_API_KEY'), 
+    'api_secret' : env('CLOUDINARY_API_SECRET'),
+}
+
+# USAR CLOUDINARY PARA MEDIA
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'

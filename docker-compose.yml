@@ -1,0 +1,12 @@
+services:
+  db:
+    image: mysql:9
+    container_name: libroteka-db-dev
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: libroteka
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db:/var/lib/mysql
