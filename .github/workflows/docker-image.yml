@@ -44,6 +44,11 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ env.REPO_LC }}:stable
             ${{ env.REGISTRY }}/${{ env.REPO_LC }}:${{ github.sha }}
+            DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}
+            DEBUG=${{ secrets.DEBUG }}
+            CLOUDINARY_CLOUD_NAME=${{ secrets.CLOUDINARY_CLOUD_NAME }}
+            CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}
+            CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}
           build-args: |
             MYSQL_PUBLIC_URL=${{ secrets.MYSQL_PUBLIC_URL_PROD }}
           cache-from: type=gha
