@@ -48,7 +48,7 @@ Start the server
 Clone the project
 
 ```bash
-  git clone https://github.com/LibrotekaISPC2023/Libroteka.git
+  git clone https://github.com/ISPC-TSDW/libroteka-frontend.git
 ``` 
 
 Go to the project directory
