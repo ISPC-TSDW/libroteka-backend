@@ -1,5 +1,37 @@
 # Tecnicatura Superior en Desarrollo web y Aplicaciones Digitales
 
+## Repositorio Backend (Django)
+
+Este repositorio contiene el código backend del proyecto **Libroteka**, desarrollado con **Django** y **Django REST Framework**. Aquí se gestiona la lógica del servidor, la base de datos, la autenticación y las API REST utilizadas por el frontend y la aplicación móvil.
+
+
+## ⚙️ Tecnologías
+
+- Python 3.8+
+- Django 4.2
+- Django REST Framework
+- MySQL
+- JWT (SimpleJWT)
+
+
+## 🔐 Autenticación
+Se implementó autenticación con JWT usando SimpleJWT. Los endpoints incluyen:
+
+/api/token/ → login y generación de token
+
+/api/token/refresh/ → renovación del token
+
+
+## 🧪 Endpoints principales
+/api/productos/ → CRUD de libros
+
+/api/carrito/ → gestión de carrito
+
+/api/users/ → registro y login de usuarios
+
+/api/mercadopago/ → simulación de pagos (sandbox)
+
+
 ## Correr Localmente
 
 <table>
