@@ -1,4 +1,5 @@
--- Script para insertar datos, para migrar la db .
+-- Script para insertar datos, para migrar la db . Para crear la db se recomienda usar makemigrations y migrate, 
+--si te da un error con este script asegurarse de no tener creado ya los autores, editoriales y generos, si es asi, solo ejecutar la parte de libros.
 -- Insert into Author table
 
 INSERT INTO author (name, country)
