@@ -153,6 +153,7 @@ class LoginAPI(APIView):
                         'email': user.email,
                         'first_name': user.first_name,
                         'last_name': user.last_name,
+                        'role': user.role.id
                     }
                     }, status=status.HTTP_200_OK)                
                 # Configuración de cookies HTTP-only para ambos tokens
