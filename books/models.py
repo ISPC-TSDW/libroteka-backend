@@ -144,7 +144,7 @@ class UsersLibroteka(AbstractUser):
     dni = models.CharField(max_length=10, validators=[RegexValidator(r'^\d{1,10}$')], unique=True)
     password = models.CharField(max_length=128)
     is_active = models.BooleanField(blank=False, default=True)
-    role = models.ForeignKey(Role, null=True, blank=True, on_delete=models.SET_NULL)
+    role = models.ForeignKey(Role, null=True, blank=True, on_delete=models.SET_NULL, default=1)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name', 'dni','is_active']
