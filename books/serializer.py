@@ -23,7 +23,11 @@ class BookSerializer(serializers.ModelSerializer):
     id_Genre = serializers.PrimaryKeyRelatedField(queryset=Genre.objects.all(), allow_null=True)
     id_Editorial = serializers.PrimaryKeyRelatedField(queryset=Editorial.objects.all(), allow_null=True)
     avg_rating = serializers.FloatField(read_only=True)
-    image = serializers.ImageField(use_url=True, required=False)
+    #image = serializers.ImageField(use_url=True, required=False)
+    image = serializers.SerializerMethodField()
+
+    def get_image(self, obj):
+         return obj.image.url if obj.image else None
 
     class Meta:
         model = Book
