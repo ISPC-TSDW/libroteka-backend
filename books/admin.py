@@ -29,11 +29,8 @@ class FavoriteAdmin(admin.ModelAdmin):
 
 class RatingAdmin(admin.ModelAdmin):
     list_display = ('id', 'id_user', 'id_book', 'rating', 'created_at', 'updated_at')
-    
-class RoleAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description')
 
-admin.site.register (Role, RoleAdmin)
+
 admin.site.register (UsersLibroteka, UsersLibrotekaAdmin)
 admin.site.register(Book, BookAdmin)
 admin.site.register(Author, AuthorAdmin)
