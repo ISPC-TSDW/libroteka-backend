@@ -1,5 +1,34 @@
 -- Script para insertar datos, para migrar la db . Para crear la db se recomienda usar makemigrations y migrate, 
---si te da un error con este script asegurarse de no tener creado ya los autores, editoriales y generos, si es asi, solo ejecutar la parte de libros.
+--tambien inserta los grupos con python manage.py init_groups
+--si te da un error con este script asegurarse de no tener creado ya los autores, editoriales y generos, etc. 
+-- Si es asi, solo ejecutar por partes libros y inserts que no tengas en la db.
+
+-- insert para insertar status de orden:
+INSERT INTO OrderStatus
+(status)
+VALUES('PENDING'), ('PAID'), ('PREPARING'), ('SENT'), ('RECEIVED');
+
+-- insertar roles
+INSERT INTO books_role
+(name, description)
+VALUES
+('Usuario', 'Usuario registrado a traves del sitio Libroteka'),
+('Admin', 'Admnistrador del sitio ');
+
+-- insertar usuarios superuser, admin y cliente:
+INSERT INTO users_libroteka
+(last_login, is_superuser, is_staff, date_joined, email, username, first_name, last_name, dni, password, is_active, role_id)
+VALUES
+(NULL, 0, 1, '2025-05-08 23:15:51.375591', 'admin@admin.com', 'admin', 'admin', 'admin', '9876543',
+	'pbkdf2_sha256$600000$SWAoHPTQlOrlNhLVdoI9if$vz9oLZcobxnF9HYyJbyEA72yedi/WY5ukoBY+Jxu2jc=', 1, 
+	(SELECT id FROM books_role WHERE name = 'Admin')),
+(NULL, 1, 1, '2025-05-08 23:20:00', 'super@admin.com', 'super', 'Super', 'User', '12345678',
+	'pbkdf2_sha256$600000$SWAoHPTQlOrlNhLVdoI9if$vz9oLZcobxnF9HYyJbyEA72yedi/WY5ukoBY+Jxu2jc=', 1,
+	NULL),
+(NULL, 0, 0, '2025-05-08 23:25:00', 'user@libroteka.com', 'usuario', 'Usuario', 'Comun', '34567890',
+'pbkdf2_sha256$600000$SWAoHPTQlOrlNhLVdoI9if$vz9oLZcobxnF9HYyJbyEA72yedi/WY5ukoBY+Jxu2jc=', 1,
+(SELECT id FROM books_role WHERE name = 'Usuario'));
+
 -- Insert into Author table
 
 INSERT INTO author (name, country)
@@ -243,3 +272,26 @@ VALUES
 'Un culto oculto revela los misterios de Cthulhu a través de las investigaciones de Francis Thurston.',
 180, 20, (SELECT id_Editorial FROM editorial WHERE name = 'Cah. P. Lovecraft y Francois de Regra'), 0.0, '9788498006325', 1928,
 'http://res.cloudinary.com/dfuuhiqto/image/upload/v1746747281/ijbyzazzkeigtaa5ytgv.jpg');
+
+
+-- insert para valoracion
+INSERT INTO Rating
+(rating, created_at, updated_at, id_book_id, id_user_id)
+VALUES
+(5,  '2025-05-08 23:25:00',  '2025-05-08 23:25:00',
+    (SELECT id_Book FROM book WHERE title = 'Orgullo y Prejuicio'),
+    (SELECT id FROM users_libroteka WHERE email = 'user@libroteka.com')),
+(3,  '2025-05-08 23:25:00',  '2025-05-08 23:25:00',
+	(SELECT id_Book FROM book WHERE title = 'After'),
+	(SELECT id FROM users_libroteka WHERE email = 'user@libroteka.com')),
+(4,  '2025-05-08 23:25:00',  '2025-05-08 23:25:00',
+    (SELECT id_Book FROM book WHERE title = 'Drácula'),
+    (SELECT id FROM users_libroteka WHERE email = 'user@libroteka.com'));
+
+-- insert para favoritos:
+INSERT INTO Favorite
+(created_at, id_book_id, id_user_id)
+VALUES
+( '2025-04-07 23:25:00',
+    (SELECT id_Book FROM book WHERE title = 'Drácula'),
+    (SELECT id FROM users_libroteka WHERE email = 'user@libroteka.com'));
