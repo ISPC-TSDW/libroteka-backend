@@ -11,25 +11,6 @@ Este repositorio contiene el código backend del proyecto **Libroteka**, desarro
 - Django 4.2
 - Django REST Framework
 - MySQL
-- JWT (SimpleJWT)
-
-
-## 🔐 Autenticación
-Se implementó autenticación con JWT usando SimpleJWT. Los endpoints incluyen:
-
-/api/token/ → login y generación de token
-
-/api/token/refresh/ → renovación del token
-
-
-## 🧪 Endpoints principales
-/api/productos/ → CRUD de libros
-
-/api/carrito/ → gestión de carrito
-
-/api/users/ → registro y login de usuarios
-
-/api/mercadopago/ → simulación de pagos (sandbox)
 
 
 ## Correr Localmente
@@ -83,17 +64,6 @@ Clone the project
   git clone https://github.com/ISPC-TSDW/libroteka-frontend.git
 ``` 
 
-Go to the project directory
-
-```bash
-  cd Frontend
-```
-
-Install dependencies
-
-```bash
-  npm install
-```
 
 Go back and Start the Docker Compose
 
