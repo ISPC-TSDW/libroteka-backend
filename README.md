@@ -58,18 +58,8 @@ Start the server
 <tr>
 <th> Docker <br> (Optional) </th>
 <td>
-Clone the project
-
-```bash
-  git clone https://github.com/ISPC-TSDW/libroteka-frontend.git
-``` 
 
 
-Go back and Start the Docker Compose
-
-```bash
-  cd ..
-```
 ```bash
   sudo docker compose up --build
 ```
