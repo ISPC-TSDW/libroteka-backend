@@ -14,6 +14,22 @@ Aquí se gestiona la lógica del servidor, la base de datos, la autenticación y
 - Cloudinary
 - MySQL 9+
 
+## 🧩 Funcionalidades principales
+- Autenticación y autorización
+- API REST
+    - Books
+    - Users
+    - Orders
+    - Favorites
+    - Ratings
+    - Roles
+    - Auth
+    - Tokens
+    - Users Libroteka
+    - Libros
+    - Favoritos
+  - API de JWT
+
 
 ## 🛠 Correr Localmente
 
