@@ -20,13 +20,13 @@ INSERT INTO users_libroteka
 (last_login, is_superuser, is_staff, date_joined, email, username, first_name, last_name, dni, password, is_active, role_id)
 VALUES
 (NULL, 0, 1, '2025-05-08 23:15:51.375591', 'admin@admin.com', 'admin', 'admin', 'admin', '9876543',
-	'pbkdf2_sha256$600000$SWAoHPTQlOrlNhLVdoI9if$vz9oLZcobxnF9HYyJbyEA72yedi/WY5ukoBY+Jxu2jc=', 1, 
+	'pbkdf2_sha256$600000$SyfDxWQgGyUfzmUCF7Qg9c$sEHoIciEOx1D9Mp/CmlkwvEd69CRgUlxHDDolTlsjqg=', 1, 
 	(SELECT id FROM books_role WHERE name = 'Admin')),
 (NULL, 1, 1, '2025-05-08 23:20:00', 'super@admin.com', 'super', 'Super', 'User', '12345678',
-	'pbkdf2_sha256$600000$SWAoHPTQlOrlNhLVdoI9if$vz9oLZcobxnF9HYyJbyEA72yedi/WY5ukoBY+Jxu2jc=', 1,
+	'pbkdf2_sha256$600000$SyfDxWQgGyUfzmUCF7Qg9c$sEHoIciEOx1D9Mp/CmlkwvEd69CRgUlxHDDolTlsjqg=', 1,
 	NULL),
 (NULL, 0, 0, '2025-05-08 23:25:00', 'user@libroteka.com', 'usuario', 'Usuario', 'Comun', '34567890',
-'pbkdf2_sha256$600000$SWAoHPTQlOrlNhLVdoI9if$vz9oLZcobxnF9HYyJbyEA72yedi/WY5ukoBY+Jxu2jc=', 1,
+	'pbkdf2_sha256$600000$SyfDxWQgGyUfzmUCF7Qg9c$sEHoIciEOx1D9Mp/CmlkwvEd69CRgUlxHDDolTlsjqg=', 1,
 (SELECT id FROM books_role WHERE name = 'Usuario'));
 
 -- Insert into Author table
