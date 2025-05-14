@@ -4,8 +4,21 @@ from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.core.validators import RegexValidator, MinLengthValidator, MinValueValidator, MaxValueValidator
 from datetime import datetime
 from cloudinary.models import CloudinaryField
+from django.core.exceptions import ValidationError
+import re
 
 
+def validate_strong_password(value):
+    if len(value) < 12:
+        raise ValidationError("La contraseña debe tener al menos 12 caracteres.")
+    if not re.search(r'[A-Z]', value):
+        raise ValidationError("La contraseña debe incluir al menos una letra mayúscula.")
+    if not re.search(r'[a-z]', value):
+        raise ValidationError("La contraseña debe incluir al menos una letra minúscula.")
+    if not re.search(r'\d', value):
+        raise ValidationError("La contraseña debe incluir al menos un número.")
+    if not re.search(r'[@$!%*?&/#\-_.]', value):
+        raise ValidationError("La contraseña debe incluir al menos un carácter especial (@$!%*?&/#-_.).")
 
 
 class Role(models.Model):
@@ -142,7 +155,10 @@ class UsersLibroteka(AbstractUser):
     first_name = models.CharField(max_length=30, validators=[MinLengthValidator(2)])
     last_name = models.CharField(max_length=35 , validators=[MinLengthValidator(2)])
     dni = models.CharField(max_length=10, validators=[RegexValidator(r'^\d{1,10}$')], unique=True)
-    password = models.CharField(max_length=128)
+    password = models.CharField(
+        max_length=128,
+        validators=[validate_strong_password]
+    )
     is_active = models.BooleanField(blank=False, default=True)
     role = models.ForeignKey(Role, null=True, blank=True, on_delete=models.SET_NULL, default=1)
 
