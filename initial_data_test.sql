@@ -12,7 +12,7 @@ VALUES('PENDING'), ('PAID'), ('PREPARING'), ('SENT'), ('RECEIVED');
 INSERT INTO books_role
 (name, description)
 VALUES
-('Usuario', 'Usuario registrado a traves del sitio Libroteka'),
+('Cliente', 'Usuario registrado a traves del sitio Libroteka'),
 ('Admin', 'Admnistrador del sitio ');
 
 -- insertar usuarios superuser, admin y cliente:

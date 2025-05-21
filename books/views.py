@@ -216,7 +216,7 @@ class UsersLibrotekaListCreate(APIView):
             user = serializer.save()
             cliente_group = Group.objects.get(name="Cliente")
             cliente_group.user_set.add(user)
-            return Response({"message": "Usuario registrado con éxito:"}, serializer.data, status=status.HTTP_201_CREATED)
+            return Response({"message": "Usuario registrado con éxito:", "data": serializer.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
