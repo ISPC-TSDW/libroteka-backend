@@ -27,7 +27,7 @@ VALUES
 	NULL),
 (NULL, 0, 0, '2025-05-08 23:25:00', 'user@libroteka.com', 'usuario', 'Usuario', 'Comun', '34567890',
 'pbkdf2_sha256$600000$SyfDxWQgGyUfzmUCF7Qg9c$sEHoIciEOx1D9Mp/CmlkwvEd69CRgUlxHDDolTlsjqg=', 1,
-(SELECT id FROM books_role WHERE name = 'Usuario'));
+(SELECT id FROM books_role WHERE name = 'Cliente'));
 
 -- Insert into Author table
 
