@@ -19,3 +19,4 @@ djangorestframework-simplejwt
 django-isbn-field
 cloudinary>=1.36.0
 django-cloudinary-storage
+mercadopago >=2.0.0
