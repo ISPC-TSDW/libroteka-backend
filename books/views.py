@@ -54,8 +54,8 @@ def mercado_pago_webhook(request):
 def mercado_pago_preference(request):
     sdk = mercadopago.SDK(settings.MERCADO_PAGO_ACCESS_TOKEN_SANDBOX)
     items = request.data.get('items', [])
-    origin = request.headers.get('Origin', 'http://localhost:4200')
-
+    origin = (request.headers.get('Origin') or 'http://localhost:4200').rstrip('/')
+    print("Origin:", origin)  # <-- LOG
     preference_data = {
         "items": items,
         "payer": {
@@ -68,10 +68,19 @@ def mercado_pago_preference(request):
         },
         "auto_return": "approved"
     }
+    print("Mercado Pago preference data:", preference_data)  # <-- LOG
     preference_response = sdk.preference().create(preference_data)
+    print("Mercado Pago response:", preference_response)  # <-- LOG
+
+    if "id" not in preference_response.get("response", {}):
+        return Response({
+            "error": "No se pudo crear la preferencia de Mercado Pago",
+            "mp_response": preference_response
+        }, status=400)
+
     return Response({
         "preference_id": preference_response["response"]["id"]
-    }, status=status.HTTP_201_CREATED)
+    }, status=201)
 
 class IsAdminGroupOrSuperadmin(BasePermission):
     def has_permission(self, request, view):
@@ -191,6 +200,10 @@ class OrdersViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
     def perform_create(self, serializer):
         serializer.save(id_User=self.request.user)
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return Order.objects.none()
+        return Order.objects.filter(id_User=self.request.user).order_by('-date')
     
 class LoginAPI(APIView):
     def post(self, request):
