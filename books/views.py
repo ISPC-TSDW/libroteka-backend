@@ -1,8 +1,11 @@
+import mercadopago
+
 from django.contrib.auth.hashers import check_password
 from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views import View
+from django.conf import settings
 from knox.models import AuthToken
 from rest_framework import viewsets, generics, permissions, status
 from rest_framework.permissions import AllowAny, IsAuthenticated, BasePermission, SAFE_METHODS
@@ -10,11 +13,74 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth.hashers import make_password
-
 from .serializer import *
 from .models import *
 from .utils import update_average_rating
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def mercado_pago_webhook(request):
+    topic = request.data.get('topic') or request.query_params.get('topic')
+    payment_id = request.data.get('data', {}).get('id') or request.data.get('id')
+
+    #procesa pagos
+    if topic == 'payment' and payment_id:
+        #obtener el estado real del pago
+        import mercadopago
+        sdk = mercadopago.SDK(settings.MERCADO_PAGO_ACCESS_TOKEN_SANDBOX)
+        payment_info = sdk.payment().get(payment_id)
+        status_mp = payment_info["response"]["status"]
+        preference_id = payment_info["response"]["order"]["id"] if payment_info["response"].get("order") else None
+
+        #busca la orden por preference_id
+        if preference_id:
+            try:
+                order = Order.objects.get(preference_id=preference_id)
+                if status_mp == "approved":
+                    order.id_Order_Status_id = 2  # Pagada
+                elif status_mp == "rejected":
+                    order.id_Order_Status_id = 3  # Cancelada
+                order.save()
+            except Order.DoesNotExist:
+                pass  
+
+    return Response({"status": "received"}, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def mercado_pago_preference(request):
+    sdk = mercadopago.SDK(settings.MERCADO_PAGO_ACCESS_TOKEN_SANDBOX)
+    items = request.data.get('items', [])
+    origin = (request.headers.get('Origin') or 'http://localhost:4200').rstrip('/')
+    print("Origin:", origin)  # <-- LOG
+    preference_data = {
+        "items": items,
+        "payer": {
+            "email": request.user.email
+        },
+        "back_urls": {
+            "success": f"{origin}/success",
+            "failure": f"{origin}/failure",
+            "pending": f"{origin}/pending"
+        },
+        "auto_return": "approved"
+    }
+    print("Mercado Pago preference data:", preference_data)  # <-- LOG
+    preference_response = sdk.preference().create(preference_data)
+    print("Mercado Pago response:", preference_response)  # <-- LOG
+
+    if "id" not in preference_response.get("response", {}):
+        return Response({
+            "error": "No se pudo crear la preferencia de Mercado Pago",
+            "mp_response": preference_response
+        }, status=400)
+
+    return Response({
+        "preference_id": preference_response["response"]["id"]
+    }, status=201)
 
 class IsAdminGroupOrSuperadmin(BasePermission):
     def has_permission(self, request, view):
@@ -132,6 +198,12 @@ class RegisterAPI(generics.GenericAPIView):
 class OrdersViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
+    def perform_create(self, serializer):
+        serializer.save(id_User=self.request.user)
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return Order.objects.none()
+        return Order.objects.filter(id_User=self.request.user).order_by('-date')
     
 class LoginAPI(APIView):
     def post(self, request):
@@ -379,3 +451,16 @@ class ModifyRatingView(APIView):
 
         serializer = self.serializer_class(favorites, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+class MeView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        user = request.user
+        return Response({
+            "email": user.email,
+            "username": user.username,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "role": user.role.id if hasattr(user, 'role') else None,
+        })

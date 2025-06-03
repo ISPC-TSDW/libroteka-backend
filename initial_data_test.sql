@@ -1,12 +1,16 @@
 -- Script para insertar datos, para migrar la db . Para crear la db se recomienda usar makemigrations y migrate, 
---tambien inserta los grupos con python manage.py init_groups
---si te da un error con este script asegurarse de no tener creado ya los autores, editoriales y generos, etc. 
+-- tambien inserta los grupos con python manage.py init_groups
+-- si te da un error con este script asegurarse de no tener creado ya los autores, editoriales y generos, etc. 
 -- Si es asi, solo ejecutar por partes libros y inserts que no tengas en la db.
 
 -- insert para insertar status de orden:
-INSERT INTO OrderStatus
-(status)
-VALUES('PENDING'), ('PAID'), ('PREPARING'), ('SENT'), ('RECEIVED');
+INSERT INTO OrderStatus (status) VALUES
+('Pendiente'),
+('Pagado'),
+('Cancelado'),
+('En preparación'),
+('Enviado'),
+('Recibido');
 
 -- insertar roles
 INSERT INTO books_role
