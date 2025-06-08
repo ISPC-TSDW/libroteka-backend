@@ -54,7 +54,7 @@ def mercado_pago_webhook(request):
 def mercado_pago_preference(request):
     sdk = mercadopago.SDK(settings.MERCADO_PAGO_ACCESS_TOKEN_SANDBOX)
     items = request.data.get('items', [])
-    origin = (request.headers.get('Origin') or 'http://localhost:4200').rstrip('/')
+    origin = (request.headers.get('Origin') or 'https://5a0e-45-184-104-253.ngrok-free.app' or 'http://localhost:4200').rstrip('/')
     print("Origin:", origin)  # <-- LOG
     preference_data = {
         "items": items,
@@ -70,16 +70,22 @@ def mercado_pago_preference(request):
     }
     print("Mercado Pago preference data:", preference_data)  # <-- LOG
     preference_response = sdk.preference().create(preference_data)
-    print("Mercado Pago response:", preference_response)  # <-- LOG
-
-    if "id" not in preference_response.get("response", {}):
-        return Response({
-            "error": "No se pudo crear la preferencia de Mercado Pago",
-            "mp_response": preference_response
-        }, status=400)
+    preference_id = preference_response["response"]["id"]
+    order = Order.objects.create(
+        id_User=request.user,
+        id_Order_Status=OrderStatus.objects.get(status="Pendiente"),
+        books=request.data.get('books', []),
+        total=request.data.get('total'),
+        books_amount=request.data.get('books_amount'),
+        address=request.data.get('address'),
+        city=request.data.get('city'),
+        telephone=request.data.get('telephone'),
+        dni=request.data.get('dni'),
+        preference_id=preference_id
+    )
 
     return Response({
-        "preference_id": preference_response["response"]["id"]
+        "preference_id": preference_id
     }, status=201)
 
 class IsAdminGroupOrSuperadmin(BasePermission):
