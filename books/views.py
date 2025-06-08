@@ -55,7 +55,7 @@ def mercado_pago_preference(request):
     sdk = mercadopago.SDK(settings.MERCADO_PAGO_ACCESS_TOKEN_SANDBOX)
     items = request.data.get('items', [])
     origin = (request.headers.get('Origin') or 'https://5a0e-45-184-104-253.ngrok-free.app' or 'http://localhost:4200').rstrip('/')
-    print("Origin:", origin)  # <-- LOG
+    print("Origin:", origin)  
     preference_data = {
         "items": items,
         "payer": {
@@ -68,8 +68,13 @@ def mercado_pago_preference(request):
         },
         "auto_return": "approved"
     }
-    print("Mercado Pago preference data:", preference_data)  # <-- LOG
+    print("Mercado Pago preference data:", preference_data)  
     preference_response = sdk.preference().create(preference_data)
+    if "id" not in preference_response["response"]:
+        return Response({
+            "error": "No se pudo crear la preferencia de Mercado Pago.",
+            "mp_response": preference_response["response"]
+        }, status=400)
     preference_id = preference_response["response"]["id"]
     order = Order.objects.create(
         id_User=request.user,
