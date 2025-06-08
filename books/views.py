@@ -86,22 +86,27 @@ class IsAdminGroupOrSuperadmin(BasePermission):
     def has_permission(self, request, view):
         if request.method in SAFE_METHODS:
             return True
-        return request.user.is_superuser or request.user.groups.filter(name='Admin').exists()
+        return request.user and request.user.is_authenticated and (
+            request.user.is_superuser or request.user.groups.filter(name='Admin').exists()
+        )
+    
 
     
 
 class AuthorViewSet(viewsets.ModelViewSet):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
+    permission_classes = [IsAdminGroupOrSuperadmin]
 
 class EditorialViewSet(viewsets.ModelViewSet):
     queryset = Editorial.objects.all()
     serializer_class = EditorialSerializer
+    permission_classes = [IsAdminGroupOrSuperadmin]
 
 class GenreViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-
+    permission_classes = [IsAdminGroupOrSuperadmin]
 class BookViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminGroupOrSuperadmin]
     queryset = Book.objects.all()
