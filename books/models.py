@@ -110,7 +110,8 @@ class Book(models.Model):
 class OrderStatus(models.Model):
     class Status(models.TextChoices):
         PENDING = ('Pendiente')
-        PAID = ('Pago aprobado')
+        PAID = ('Pagado')
+        CANCELED = ('Cancelado')
         PREPARING = ('En preparación')
         SENT = ('Enviado')
         RECEIVED = ('Recibido')
@@ -164,10 +165,15 @@ class Order(models.Model):
     id_Order = models.AutoField(primary_key=True)
     id_Order_Status = models.ForeignKey(OrderStatus, to_field='id_Order_Status', on_delete=models.CASCADE)   
     id_User = models.ForeignKey(UsersLibroteka, to_field='email', null=True, blank=True, on_delete=models.CASCADE)
-    date = models.DateTimeField()
+    date = models.DateTimeField(auto_now_add=True)
     books = models.JSONField(default=list)
     total = models.DecimalField(blank=False, decimal_places=2, max_digits=10)
     books_amount = models.IntegerField(blank=False)
+    address = models.CharField(max_length=255, blank=True)
+    city = models.CharField(max_length=100, blank=True)
+    telephone = models.CharField(max_length=20, blank=True)
+    dni = models.CharField(max_length=10, validators=[RegexValidator(r'^\d{1,10}$')], blank=True)
+    preference_id = models.CharField(max_length=100, null=True, blank=True)
 
     class Meta:
         db_table= 'Orders'

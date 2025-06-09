@@ -131,6 +131,19 @@ WSGI_APPLICATION = 'Libroteka.wsgi.application'
 
 import connection_url
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'libroteka',#cambia por la el nombre de db que quieras
+#         'USER': 'root',
+#         'PASSWORD': 'root',#cambia por la contraseña de root
+#         'HOST': 'localhost',
+#         'PORT': '3306',
+#         'OPTIONS': {
+#             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+#         }
+#     }
+# }
 
 DATABASES = {
 #     'default': {
@@ -233,3 +246,6 @@ CLOUDINARY_STORAGE = {
 
 # USAR CLOUDINARY PARA MEDIA
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+MERCADO_PAGO_ACCESS_TOKEN_SANDBOX = env('MERCADO_PAGO_ACCESS_TOKEN_SANDBOX')
+MERCADO_PAGO_PUBLIC_KEY_SANDBOX = env('MERCADO_PAGO_PUBLIC_KEY_SANDBOX')

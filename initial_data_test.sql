@@ -1,18 +1,22 @@
 -- Script para insertar datos, para migrar la db . Para crear la db se recomienda usar makemigrations y migrate, 
---tambien inserta los grupos con python manage.py init_groups
---si te da un error con este script asegurarse de no tener creado ya los autores, editoriales y generos, etc. 
+-- tambien inserta los grupos con python manage.py init_groups
+-- si te da un error con este script asegurarse de no tener creado ya los autores, editoriales y generos, etc. 
 -- Si es asi, solo ejecutar por partes libros y inserts que no tengas en la db.
 
 -- insert para insertar status de orden:
-INSERT INTO OrderStatus
-(status)
-VALUES('PENDING'), ('PAID'), ('PREPARING'), ('SENT'), ('RECEIVED');
+INSERT INTO OrderStatus (status) VALUES
+('Pendiente'),
+('Pagado'),
+('Cancelado'),
+('En preparación'),
+('Enviado'),
+('Recibido');
 
 -- insertar roles
 INSERT INTO books_role
 (name, description)
 VALUES
-('Usuario', 'Usuario registrado a traves del sitio Libroteka'),
+('Cliente', 'Usuario registrado a traves del sitio Libroteka'),
 ('Admin', 'Admnistrador del sitio ');
 
 -- insertar usuarios superuser, admin y cliente:
@@ -26,8 +30,8 @@ VALUES
 	'pbkdf2_sha256$600000$SyfDxWQgGyUfzmUCF7Qg9c$sEHoIciEOx1D9Mp/CmlkwvEd69CRgUlxHDDolTlsjqg=', 1,
 	NULL),
 (NULL, 0, 0, '2025-05-08 23:25:00', 'user@libroteka.com', 'usuario', 'Usuario', 'Comun', '34567890',
-	'pbkdf2_sha256$600000$SyfDxWQgGyUfzmUCF7Qg9c$sEHoIciEOx1D9Mp/CmlkwvEd69CRgUlxHDDolTlsjqg=', 1,
-(SELECT id FROM books_role WHERE name = 'Usuario'));
+'pbkdf2_sha256$600000$SyfDxWQgGyUfzmUCF7Qg9c$sEHoIciEOx1D9Mp/CmlkwvEd69CRgUlxHDDolTlsjqg=', 1,
+(SELECT id FROM books_role WHERE name = 'Cliente'));
 
 -- Insert into Author table
 

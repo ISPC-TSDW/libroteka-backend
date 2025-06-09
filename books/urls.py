@@ -37,6 +37,10 @@ urlpatterns = [
     path('user/update/', UpdateUserAPI.as_view(), name='user-update'),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('mercadopago/preference/', mercado_pago_preference, name='mercado_pago_preference'),
+    path('mercadopago/webhook/', mercado_pago_webhook, name='mercadopago_webhook'),
+    path('me/', MeView.as_view(), name='me'),
+
 
     path('', include(router.urls)),
 ]

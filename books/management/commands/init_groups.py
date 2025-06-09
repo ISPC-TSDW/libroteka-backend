@@ -8,7 +8,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         # Grupo: administrador
-        admin_group, _ = Group.objects.get_or_create(name='administrador')
+        admin_group, _ = Group.objects.get_or_create(name='Admin')
         admin_perms = Permission.objects.filter(
             content_type__model__in=['book', 'author', 'editorial', 'genre', 'order']
         )
@@ -16,7 +16,7 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("Grupo 'administrador' creado."))
 
         # Grupo: cliente
-        client_group, _ = Group.objects.get_or_create(name='clientes')
+        client_group, _ = Group.objects.get_or_create(name='Cliente')
         client_perms = Permission.objects.filter(
             content_type__model__in=['book', 'rating', 'favorite', 'order'],
             codename__in=[
@@ -31,4 +31,4 @@ class Command(BaseCommand):
             ]
         )
         client_group.permissions.set(client_perms)
-        self.stdout.write(self.style.SUCCESS("Grupo 'clientes' creado."))
+        self.stdout.write(self.style.SUCCESS("Grupo 'cliente' creado."))
