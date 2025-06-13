@@ -26,13 +26,13 @@ def mercado_pago_webhook(request):
     topic = request.data.get('topic') or request.query_params.get('topic')
     payment_id = request.data.get('data', {}).get('id') or request.data.get('id')
 
-    #procesa pagos
     if topic == 'payment' and payment_id:
         #obtener el estado real del pago
         import mercadopago
         sdk = mercadopago.SDK(settings.MERCADO_PAGO_ACCESS_TOKEN_SANDBOX)
         payment_info = sdk.payment().get(payment_id)
         status_mp = payment_info["response"]["status"]
+        # Busca el preference_id asociado al pago
         preference_id = payment_info["response"]["order"]["id"] if payment_info["response"].get("order") else None
 
         #busca la orden por preference_id
@@ -40,12 +40,12 @@ def mercado_pago_webhook(request):
             try:
                 order = Order.objects.get(preference_id=preference_id)
                 if status_mp == "approved":
-                    order.id_Order_Status_id = 2  # Pagada
+                    order.id_Order_Status = OrderStatus.objects.get(status="Pagado")
                 elif status_mp == "rejected":
-                    order.id_Order_Status_id = 3  # Cancelada
+                    order.id_Order_Status = OrderStatus.objects.get(status="Cancelado")
                 order.save()
             except Order.DoesNotExist:
-                pass  
+                pass
 
     return Response({"status": "received"}, status=status.HTTP_200_OK)
 
