@@ -31,21 +31,33 @@ def mercado_pago_webhook(request):
         import mercadopago
         sdk = mercadopago.SDK(settings.MERCADO_PAGO_ACCESS_TOKEN_SANDBOX)
         payment_info = sdk.payment().get(payment_id)
-        status_mp = payment_info["response"]["status"]
-        # Busca el preference_id asociado al pago
-        preference_id = payment_info["response"]["order"]["id"] if payment_info["response"].get("order") else None
+        status_mp = payment_info["response"].get("status")
+        # Intenta obtener el preference_id de varias ubicaciones posibles
+        preference_id = (
+            payment_info["response"].get("preference_id") or
+            (payment_info["response"].get("metadata") or {}).get("preference_id")
+        )
 
-        #busca la orden por preference_id
+        # Debug: imprime para ver qué llega
+        print("Webhook Mercado Pago:")
+        print("status_mp:", status_mp)
+        print("preference_id:", preference_id)
+        print("payment_info:", payment_info["response"])
+
         if preference_id:
             try:
                 order = Order.objects.get(preference_id=preference_id)
                 if status_mp == "approved":
-                    order.id_Order_Status = OrderStatus.objects.update(status="Pagado")
+                    order.id_Order_Status = OrderStatus.objects.get(status="Pagado")
                 elif status_mp == "rejected":
-                    order.id_Order_Status = OrderStatus.objects.update(status="Cancelado")
+                    order.id_Order_Status = OrderStatus.objects.get(status="Cancelado")
+                elif status_mp == "pending":
+                    order.id_Order_Status = OrderStatus.objects.get(status="Pendiente")
                 order.save()
             except Order.DoesNotExist:
-                pass
+                print(f"No se encontró la orden con preference_id {preference_id}")
+            except OrderStatus.DoesNotExist:
+                print(f"No se encontró el estado {status_mp} en OrderStatus")
 
     return Response({"status": "received"}, status=status.HTTP_200_OK)
 
