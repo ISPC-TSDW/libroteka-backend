@@ -26,48 +26,91 @@ def mercado_pago_webhook(request):
     topic = request.data.get('topic') or request.query_params.get('topic')
     payment_id = request.data.get('data', {}).get('id') or request.data.get('id')
 
+    import mercadopago
+    sdk = mercadopago.SDK(settings.MERCADO_PAGO_ACCESS_TOKEN_SANDBOX)
+
+    topic = request.data.get('topic') or request.query_params.get('topic') or request.data.get('type')
+    payment_id = request.data.get('data', {}).get('id') or request.data.get('id')
+
+    print("Webhook recibido:")
+    print("Topic:", topic)
+    print("Payment ID:", payment_id)
+
     if topic == 'payment' and payment_id:
-        #obtener el estado real del pago
-        import mercadopago
-        sdk = mercadopago.SDK(settings.MERCADO_PAGO_ACCESS_TOKEN_SANDBOX)
-        payment_info = sdk.payment().get(payment_id)
-        status_mp = payment_info["response"].get("status")
-        # Intenta obtener el preference_id de varias ubicaciones posibles
-        preference_id = (
-            payment_info["response"].get("preference_id") or
-            (payment_info["response"].get("metadata") or {}).get("preference_id")
-        )
+        try:
+            payment_info = sdk.payment().get(payment_id)
+            status_mp = payment_info["response"].get("status")
+            preference_id = (
+                payment_info["response"].get("preference_id") or
+                (payment_info["response"].get("metadata") or {}).get("preference_id")
+            )
 
-        # Debug: imprime para ver qué llega
-        print("Webhook Mercado Pago:")
-        print("status_mp:", status_mp)
-        print("preference_id:", preference_id)
-        print("payment_info:", payment_info["response"])
+            print("Info de pago recibida:")
+            print("Estado del pago:", status_mp)
+            print("Preference ID:", preference_id)
 
-        if preference_id:
+            if not preference_id:
+                print("No se encontró el preference_id en la respuesta del pago")
+                return Response({"error": "No preference_id found"}, status=400)
+
             try:
                 order = Order.objects.get(preference_id=preference_id)
+
                 if status_mp == "approved":
                     order.id_Order_Status = OrderStatus.objects.get(status="Pagado")
                 elif status_mp == "rejected":
                     order.id_Order_Status = OrderStatus.objects.get(status="Cancelado")
                 elif status_mp == "pending":
                     order.id_Order_Status = OrderStatus.objects.get(status="Pendiente")
+
                 order.save()
+                print(f"Orden {order.id_Order} actualizada a {order.id_Order_Status.status}")
             except Order.DoesNotExist:
                 print(f"No se encontró la orden con preference_id {preference_id}")
             except OrderStatus.DoesNotExist:
-                print(f"No se encontró el estado {status_mp} en OrderStatus")
+                print(f"No existe un estado llamado {status_mp} en OrderStatus")
 
-    return Response({"status": "received"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print("Error al consultar el pago:", str(e))
+            return Response({"error": str(e)}, status=500)
+
+    # Manejo de merchant_order
+    elif topic in ["merchant_order", "topic_merchant_order_wh"] and payment_id:
+        try:
+            # Obtener detalles de la orden comercial
+            merchant_order_info = sdk.merchant_order().get(payment_id)
+            preference_id = merchant_order_info["response"].get("preference_id")
+            order_status = merchant_order_info["response"].get("status")
+
+            print("Merchant Order Info:", merchant_order_info["response"])
+            print("Preference ID:", preference_id)
+            print("Estado merchant_order:", order_status)
+
+            if preference_id:
+                try:
+                    order = Order.objects.get(preference_id=preference_id)
+
+                    # Si la orden está cerrada, asumimos que el pago fue exitoso
+                    if order_status == "closed":
+                        order.id_Order_Status = OrderStatus.objects.get(status="Pagado")
+                        order.save()
+                        print(f"Orden {order.id_Order} marcada como Pagado por merchant_order cerrado.")
+                except Order.DoesNotExist:
+                    print(f"No se encontró orden con preference_id {preference_id}")
+        except Exception as e:
+            print("Error al obtener merchant_order:", str(e))
+            return Response({"error": str(e)}, status=500)
+
+    return Response({"status": "received"}, status=200)
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def mercado_pago_preference(request):
     sdk = mercadopago.SDK(settings.MERCADO_PAGO_ACCESS_TOKEN_SANDBOX)
     items = request.data.get('items', [])
-    origin = (request.headers.get('Origin') or 'https://5011-200-107-89-79.ngrok-free.app/' or 'http://localhost:4200/').rstrip('/')
-    print("Origin:", origin)  
+    origin = (request.headers.get('Origin') or "https://libroback.koyeb.app/api" or "https://libroteka-app.onrender.com/api").rstrip('/')
+    print("Origin:", origin)
     preference_data = {
         "items": items,
         "payer": {
@@ -79,7 +122,7 @@ def mercado_pago_preference(request):
             "pending": f"{origin}/pending"
         },
         "auto_return": "approved",
-        "notification_url": f"{origin}mercadopago/webhook/"
+        "notification_url": f"{origin}/mercadopago/webhook/"
     }
     print("Mercado Pago preference data:", preference_data)  
     preference_response = sdk.preference().create(preference_data)
