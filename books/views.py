@@ -1,4 +1,6 @@
 import mercadopago
+import logging
+logger = logging.getLogger(__name__)
 
 from django.contrib.auth.hashers import check_password
 from django.db import transaction
@@ -32,9 +34,7 @@ def mercado_pago_webhook(request):
     topic = request.data.get('topic') or request.query_params.get('topic') or request.data.get('type')
     payment_id = request.data.get('data', {}).get('id') or request.data.get('id')
 
-    print("Webhook recibido:")
-    print("Topic:", topic)
-    print("Payment ID:", payment_id)
+    logger.info(f"Webhook received: topic={topic}, payment_id={payment_id}")
 
     if topic == 'payment' and payment_id:
         try:
@@ -45,12 +45,10 @@ def mercado_pago_webhook(request):
                 (payment_info["response"].get("metadata") or {}).get("preference_id")
             )
 
-            print("Info de pago recibida:")
-            print("Estado del pago:", status_mp)
-            print("Preference ID:", preference_id)
+            logger.info(f"Info de pago recibida: Estado={status_mp}, Preference ID={preference_id}")
 
             if not preference_id:
-                print("No se encontró el preference_id en la respuesta del pago")
+                logger.warning("No se encontró el preference_id en la respuesta del pago")
                 return Response({"error": "No preference_id found"}, status=400)
 
             try:
@@ -64,14 +62,14 @@ def mercado_pago_webhook(request):
                     order.id_Order_Status = OrderStatus.objects.get(status="Pendiente")
 
                 order.save()
-                print(f"Orden {order.id_Order} actualizada a {order.id_Order_Status.status}")
+                logger.info(f"Orden {order.id_Order} actualizada a {order.id_Order_Status.status}")
             except Order.DoesNotExist:
-                print(f"No se encontró la orden con preference_id {preference_id}")
+                logger.warning(f"No se encontró la orden con preference_id {preference_id}")
             except OrderStatus.DoesNotExist:
-                print(f"No existe un estado llamado {status_mp} en OrderStatus")
+                logger.warning(f"No existe un estado llamado {status_mp} en OrderStatus")
 
         except Exception as e:
-            print("Error al consultar el pago:", str(e))
+            logger.error(f"Error al consultar el pago: {str(e)}")
             return Response({"error": str(e)}, status=500)
 
     # Manejo de merchant_order
@@ -82,9 +80,9 @@ def mercado_pago_webhook(request):
             preference_id = merchant_order_info["response"].get("preference_id")
             order_status = merchant_order_info["response"].get("status")
 
-            print("Merchant Order Info:", merchant_order_info["response"])
-            print("Preference ID:", preference_id)
-            print("Estado merchant_order:", order_status)
+            logger.info(f"Merchant Order Info: {merchant_order_info['response']}")
+            logger.info(f"Preference ID: {preference_id}")
+            logger.info(f"Estado merchant_order: {order_status}")
 
             if preference_id:
                 try:
@@ -94,11 +92,11 @@ def mercado_pago_webhook(request):
                     if order_status == "closed":
                         order.id_Order_Status = OrderStatus.objects.get(status="Pagado")
                         order.save()
-                        print(f"Orden {order.id_Order} marcada como Pagado por merchant_order cerrado.")
+                        logger.info(f"Orden {order.id_Order} marcada como Pagado por merchant_order cerrado.")
                 except Order.DoesNotExist:
-                    print(f"No se encontró orden con preference_id {preference_id}")
+                    logger.warning(f"No se encontró orden con preference_id {preference_id}")
         except Exception as e:
-            print("Error al obtener merchant_order:", str(e))
+            logger.error(f"Error al obtener merchant_order: {str(e)}")
             return Response({"error": str(e)}, status=500)
 
     return Response({"status": "received"}, status=200)
@@ -110,7 +108,6 @@ def mercado_pago_preference(request):
     sdk = mercadopago.SDK(settings.MERCADO_PAGO_ACCESS_TOKEN_SANDBOX)
     items = request.data.get('items', [])
     origin = (request.headers.get('Origin') or "https://libroback.koyeb.app/api" or "https://libroteka-app.onrender.com/api").rstrip('/')
-    print("Origin:", origin)
     preference_data = {
         "items": items,
         "payer": {
@@ -124,7 +121,6 @@ def mercado_pago_preference(request):
         "auto_return": "approved",
         "notification_url": f"{origin}/mercadopago/webhook/"
     }
-    print("Mercado Pago preference data:", preference_data)  
     preference_response = sdk.preference().create(preference_data)
     if "id" not in preference_response["response"]:
         return Response({
