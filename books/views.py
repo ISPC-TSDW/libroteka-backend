@@ -40,9 +40,9 @@ def mercado_pago_webhook(request):
             try:
                 order = Order.objects.get(preference_id=preference_id)
                 if status_mp == "approved":
-                    order.id_Order_Status = OrderStatus.objects.get(status="Pagado")
+                    order.id_Order_Status = OrderStatus.objects.update(status="Pagado")
                 elif status_mp == "rejected":
-                    order.id_Order_Status = OrderStatus.objects.get(status="Cancelado")
+                    order.id_Order_Status = OrderStatus.objects.update(status="Cancelado")
                 order.save()
             except Order.DoesNotExist:
                 pass
